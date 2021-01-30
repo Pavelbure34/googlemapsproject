@@ -1,8 +1,4 @@
-<h1>NineTwoOne Frontend Coding Project</h1>
-
-I have acquired a IP address for the website
-by using Network Utility built in to Macbook OS(OSX Catalina).
-
+<h1>Google Maps Project</h1>
 
 <h2>Available Scripts</h2>
 
