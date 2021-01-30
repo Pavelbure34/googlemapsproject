@@ -1,8 +1,10 @@
-# Getting Started with Create React App
+<h1>NineTwoOne Frontend Coding Project</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+I have acquired a IP address for the website
+by using Network Utility built in to Macbook OS(OSX Catalina).
 
-## Available Scripts
+
+<h2>Available Scripts</h2>
 
 In the project directory, you can run:
 

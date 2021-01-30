@@ -1,13 +1,16 @@
-import React from 'react';
+import React, {StrictMode} from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
+import './index.css';
 
+//variables for the project
+const GOOGLE_MAPS_API_KEY = ""; //your Google Maps API key
+const IP_ADDRESS = "175.126.38.231";                                   //use this for another website
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <StrictMode>
+    <App apiKey={GOOGLE_MAPS_API_KEY} ip={IP_ADDRESS}/>
+  </StrictMode>,
   document.getElementById('root')
 );
 
