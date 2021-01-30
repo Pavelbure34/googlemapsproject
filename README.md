@@ -1,10 +1,19 @@
 <h1>Google Maps Project</h1>
 
+<h2>Instruction</h2>
+<ul>
+    <li>Pull the Project</li>
+    <li>run "npm install"</li>
+    <li>Get Google Maps API key</li>
+    <li>Write your Google Maps API Key in src/index.js</li>
+    <li>run "npm run-project"</li>
+</ul>
+
 <h2>Available Scripts</h2>
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm start-project`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
