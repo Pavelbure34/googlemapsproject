@@ -1,16 +1,21 @@
 import React from 'react';
 import {H3} from './pages';
-import {                                 //for routing to h3
-  BrowserRouter as Router,
+import {                     //It ensures routing to h3 by default.
+  BrowserRouter as Router,        
   Route,
   Redirect
 } from "react-router-dom";
 
-const App = ({apiKey, ip})=>{
+/*
+  This component is the highest component
+  that wraps around pages under React Router.
+*/
+
+const App = ({ip})=>{
   return (
     <Router>
       <Route path="/h3">                  
-        <H3 apiKey={apiKey} ip={ip}/>
+        <H3 ip={ip}/>
       </Route>
       <Redirect to="/h3"/>
     </Router>

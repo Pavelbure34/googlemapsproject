@@ -5,11 +5,11 @@ import App from './App';
 import './index.css';
 
 //variables for the project
-const GOOGLE_MAPS_API_KEY = ""; //your Google Maps API key
-const IP_ADDRESS = "175.126.38.231";                                   //use this for another website
+const IP_ADDRESS = "175.126.38.231";            //use this for another website
+
 ReactDOM.render(
   <StrictMode>
-    <App apiKey={GOOGLE_MAPS_API_KEY} ip={IP_ADDRESS}/>
+    <App ip={IP_ADDRESS}/>
   </StrictMode>,
   document.getElementById('root')
 );

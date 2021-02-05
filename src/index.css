@@ -13,15 +13,10 @@ body {
   min-height:500px;
 }
 
-#buttons{
+/*Centering thge button*/
+#triggerPolygonButton_div{
+  display:flex;
   width:100%;
-  padding:1vh auto 0 auto;
-}
-
-.visible{
-  visibility: visible;
-}
-
-.invisible{
-  visibility: hidden;
+  justify-content: center;
+  align-items: center;
 }

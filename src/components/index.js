@@ -1,1 +1,1 @@
-export {Buttons} from './buttons';
+export {TriggerPolygonButton} from './triggerPolygonButton';

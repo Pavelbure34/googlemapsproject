@@ -1,19 +1,20 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';  //for HTTP request
+import React, {useRef, useEffect} from 'react';
+import axios from 'axios';    //making HTTP/HTTPS request
 import {
-    geoToH3,
-    h3ToGeoBoundary,
-    kRing,
-    h3SetToMultiPolygon
+    geoToH3,                  //computing h3 Index
+    h3ToGeoBoundary,          //computing and acquiring coordinates for single polygon
+    kRing,                    //computing and acquiring h3 indexes for adjacent polygons 
+    h3SetToMultiPolygon       //computing and acquiring coordinates for multiple adjacent polygons
 } from "h3-js";
-import {Loader} from "@googlemaps/js-api-loader";
-import {Buttons} from '../components';
+import {TriggerPolygonButton} from '../components';
 
 /*
     This file is a page for the path of "/h3".
     It uses one separate Buttons component
-    to enable partial rerendering.
-    
+    because the button text needs to be re-rendered
+    after each click.
+    This page uses useRef hook to avoid unnecessary re-rendering.
+
     Param(s):
         - apiKey: apiKey for google map**(REQUIRED)
         - ip: ip address of target company
@@ -22,63 +23,60 @@ import {Buttons} from '../components';
         - a page which google map has polygon drawn.
 */
 
-const H3 = ({apiKey, ip})=>{
-    const [lat, setLat] = useState(37.546);      //latitude
-    const [lng, setLng] = useState(126.949);     //longtitude
-    const [h3Index, setH3Index] = useState(0);   //h3Index for polygon coordinates
-    let map;                                     //map instance
-    const button1 = document.getElementById("button1");
-    const button2 = document.getElementById("button2");
+const H3 = ({ip})=>{
+    const map = useRef(null);        //reference object for accessing map div 
+    const googleMap = useRef(null);  //reference object for storing google maps object
+    const h3Index = useRef(null);    //reference object for storing h3Index
+    
+    useEffect(()=>{
+        /*
+            When the page is rendered for the first time,
+            load the script to the head directly.
+        */
+        //attach your callback function to the `window` object
+        window.initMap = ()=>{        
+            googleMap.current = new window.google.maps.Map(         
+                map.current, {
+                center: {
+                    lat: 37.546,   //centering location
+                    lng: 126.949
+                }, zoom: 10        
+            });
+        };
 
-    useEffect(                                   //based on IP, recomputes the target lat and lng, then h3Index
-        ()=>axios.get(`https://freegeoip.app/json/${ip}`).then(res=>{
+        //acquiring h3Index for h3 library
+        axios.get(`https://freegeoip.app/json/${ip}`).then(res=>{
             const {latitude, longitude} = res.data;
-            setH3Index(geoToH3(lat, lng, 7));
-            setLat(latitude);
-            setLng(longitude);
-        }).catch(e=>console.log(e))
-    );                                            //run this as soon as page renders but only once.
+            h3Index.current = geoToH3(latitude, longitude, 7);
+        }).catch(e=>console.log(e));
+    }, [ip]);
+   
+    const getGeoJSON = (coords)=>{                      
+        /*
+            this function converts an array of array holding latitude and longitude data
+            into an array of JSON holding the same data under the parameter of lat and lng
+            in order to feed into Polygon method.
 
-    const loader = new Loader({                   //initial prep for google map
-        apiKey,
-        version:"weekly"
-    });
-
-    loader.load().then(()=>{                      //initiating google map
-        map = new window.google.maps.Map(         
-            document.getElementById("map"), {
-            center: {lat, lng},
-            zoom: 10
-        });
-
-        new window.google.maps.event.addDomListener( //tying button event to map
-            button1, 
-            "click",
-            ()=>makePolygonOnMap(
-                getGeoJSON(h3ToGeoBoundary(h3Index)),      //drawing the first target polygon
-                "#0000ff"
-            )
-        );
-        
-        new window.google.maps.event.addDomListener( //tying button event to map
-            button2, 
-            "click",
-            ()=>makePolygonOnMap(
-                getGeoJSON(h3SetToMultiPolygon(kRing(h3Index, 1))[0][0]), //drawing adjacent polygons
-                "#ff0000"
-            )
-        );
-    }).catch(e=>console.log(e));
-
-    const getGeoJSON = (coords)=>{                      //converting resulting array of array into array of JSON
-        for (let i in coords){
-            const coord = coords[i];
-            coords[i] = {lat:coord[0], lng:coord[1]};
-        }
+            Param(s):
+                - coords: an array of coordinates
+                
+            Return:
+                - converted coords whose type is an array of JSON
+        */
+        coords.map((coord, i)=>coords[i] = {lat:coord[0], lng:coord[1]});
         return coords;
     }
 
-    const makePolygonOnMap = (coords, fillColor)=>{     //writing polygon on the map
+    const makePolygonOnMap = (coords, fillColor)=>{     
+        /*
+            this function writes polyon on the map based on the given coordinates.
+            Param(s):
+                - coords: an array of coordinates
+                - fillColor: a string indicating a color used to fill the polygon(s)
+
+            Return:
+                - None
+        */
         const polygon = new window.google.maps.Polygon({
             paths: coords,
             strokeOpacity: 0.5,
@@ -86,13 +84,24 @@ const H3 = ({apiKey, ip})=>{
             fillColor,
             fillOpacity:0.5
         });
-        polygon.setMap(map);
+        polygon.setMap(googleMap.current);  //draw polygon on the map
     }
     
     return (
         <div>
-            <section id="map"/>
-            <Buttons/>
+            <section id="map" ref={map}/>
+            <section id="triggerPolygonButton_div">
+                <TriggerPolygonButton
+                    initialButtonEvent={()=>makePolygonOnMap(
+                        getGeoJSON(h3ToGeoBoundary(h3Index.current)),
+                        "#0000ff"
+                    )}
+                    secondButtonEvent={()=>makePolygonOnMap(
+                        getGeoJSON(h3SetToMultiPolygon(kRing(h3Index.current, 1))[0][0]),
+                        "#ff0000"
+                    )}
+                />
+            </section>
         </div>
     );
 }
